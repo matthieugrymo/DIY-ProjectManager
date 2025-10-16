@@ -15,6 +15,7 @@ import { ProjectBudget } from "@/components/project-budget"
 import { ProjectFiles } from "@/components/project-files"
 import { ProjectNotes } from "@/components/project-notes"
 import Link from "next/link"
+import { useLanguage } from "@/contexts/language-context"
 
 interface Project {
   id: string
@@ -176,6 +177,7 @@ export default function ProjectDetailPage() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks)
   const [materials, setMaterials] = useState<Material[]>(mockMaterials)
   const [isShared, setIsShared] = useState(false)
+  const { t } = useLanguage() // Added translation hook
 
   const handleAddTask = (newTask: Omit<Task, "id">) => {
     const task: Task = {
@@ -219,6 +221,17 @@ export default function ProjectDetailPage() {
     router.push(`/project/${params.id}/request-help`)
   }
 
+  const handleTileConfigurator = () => {
+    router.push(`/project/${params.id}/tile-configurator`)
+  }
+
+  const isTileProject = () => {
+    const tileKeywords = ["tile", "backsplash", "subway", "ceramic", "porcelain", "mosaic"]
+    return tileKeywords.some(
+      (keyword) => project.title.toLowerCase().includes(keyword) || project.description.toLowerCase().includes(keyword),
+    )
+  }
+
   const completedTasks = tasks.filter((task) => task.completed).length
   const totalEstimatedHours = tasks.reduce((acc, task) => acc + (task.estimatedHours || 0), 0)
   const completedHours = tasks
@@ -240,19 +253,19 @@ export default function ProjectDetailPage() {
         <Link href="/">
           <Button variant="ghost" size="sm" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
+            Retour au Tableau de Bord
           </Button>
         </Link>
         <Button variant="outline" size="sm" className="gap-2 bg-transparent" onClick={handleShare}>
           {isShared ? (
             <>
               <Check className="h-4 w-4" />
-              Copied!
+              Copié!
             </>
           ) : (
             <>
               <Share2 className="h-4 w-4" />
-              Share Project
+              {t("project.share")}
             </>
           )}
         </Button>
@@ -269,7 +282,7 @@ export default function ProjectDetailPage() {
                   <CardDescription className="mt-2 text-base">{project.description}</CardDescription>
                 </div>
                 <Badge className={project.status === "in-progress" ? "bg-yellow-100 text-yellow-800" : ""}>
-                  {project.status.replace("-", " ")}
+                  {t(`status.${project.status.replace("-", "")}`)}
                 </Badge>
               </div>
             </CardHeader>
@@ -284,19 +297,19 @@ export default function ProjectDetailPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">{completedTasks}</div>
-                  <div className="text-sm text-muted-foreground">Tasks Done</div>
+                  <div className="text-sm text-muted-foreground">Tâches Terminées</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold">{tasks.length}</div>
-                  <div className="text-sm text-muted-foreground">Total Tasks</div>
+                  <div className="text-sm text-muted-foreground">Total Tâches</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-accent">{completedHours}h</div>
-                  <div className="text-sm text-muted-foreground">Hours Spent</div>
+                  <div className="text-sm text-muted-foreground">Heures Passées</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold">{formatDate(project.dueDate)}</div>
-                  <div className="text-sm text-muted-foreground">Due Date</div>
+                  <div className="text-sm text-muted-foreground">Date Limite</div>
                 </div>
               </div>
             </CardContent>
@@ -306,12 +319,12 @@ export default function ProjectDetailPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Progress Overview</CardTitle>
+              <CardTitle className="text-lg">Aperçu du Progrès</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Overall Progress</span>
+                  <span>Progrès Global</span>
                   <span className="font-medium">{project.progress}%</span>
                 </div>
                 <Progress value={project.progress} className="h-3" />
@@ -319,7 +332,7 @@ export default function ProjectDetailPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Tasks Completed</span>
+                  <span>Tâches Terminées</span>
                   <span className="font-medium">
                     {completedTasks}/{tasks.length}
                   </span>
@@ -329,7 +342,7 @@ export default function ProjectDetailPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Time Progress</span>
+                  <span>Progrès Temps</span>
                   <span className="font-medium">
                     {completedHours}/{totalEstimatedHours}h
                   </span>
@@ -341,20 +354,30 @@ export default function ProjectDetailPage() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+              <CardTitle className="text-lg">Actions Rapides</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button className="w-full gap-2" size="sm">
                 <Plus className="h-4 w-4" />
-                Add Task
+                {t("tasks.addTask")}
               </Button>
               <Button className="w-full gap-2 bg-transparent" variant="outline" size="sm">
                 <Package className="h-4 w-4" />
-                Add Material
+                {t("materials.addMaterial")}
               </Button>
+              {isTileProject() && (
+                <Button
+                  className="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  size="sm"
+                  onClick={handleTileConfigurator}
+                >
+                  <Calculator className="h-4 w-4" />
+                  {t("project.tileConfigurator", "Configurateur de Carreaux")}
+                </Button>
+              )}
               <Button className="w-full gap-2 bg-transparent" variant="outline" size="sm">
                 <Calendar className="h-4 w-4" />
-                Schedule Task
+                Planifier Tâche
               </Button>
               <Button
                 className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -369,11 +392,11 @@ export default function ProjectDetailPage() {
                     d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8z"
                   />
                 </svg>
-                Request Help
+                {t("project.requestHelp")}
               </Button>
               <Button className="w-full gap-2 bg-transparent" variant="outline" size="sm" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
-                Share Project
+                {t("project.share")}
               </Button>
             </CardContent>
           </Card>
@@ -385,19 +408,19 @@ export default function ProjectDetailPage() {
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="tasks" className="gap-2">
             <CheckSquare className="h-4 w-4" />
-            Tasks
+            {t("nav.tasks")}
           </TabsTrigger>
           <TabsTrigger value="materials" className="gap-2">
             <Package className="h-4 w-4" />
-            Materials
+            {t("nav.materials")}
           </TabsTrigger>
           <TabsTrigger value="budget" className="gap-2">
             <Calculator className="h-4 w-4" />
-            Budget
+            {t("nav.budget")}
           </TabsTrigger>
           <TabsTrigger value="files" className="gap-2">
             <FileText className="h-4 w-4" />
-            Files
+            Fichiers
           </TabsTrigger>
           <TabsTrigger value="notes" className="gap-2">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -408,11 +431,11 @@ export default function ProjectDetailPage() {
                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
               />
             </svg>
-            Notes
+            {t("nav.notes")}
           </TabsTrigger>
           <TabsTrigger value="calendar" className="gap-2">
             <Calendar className="h-4 w-4" />
-            Calendar
+            {t("nav.calendar")}
           </TabsTrigger>
         </TabsList>
 

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/contexts/language-context"
 
 interface Task {
   id: string
@@ -116,6 +117,7 @@ export default function CombinedCalendarPage() {
   const [selectedProject, setSelectedProject] = useState<string>("all")
   const [tasks] = useState<Task[]>(mockAllTasks)
   const router = useRouter()
+  const { t } = useLanguage() // Added translation hook
 
   const navigateToProject = (projectId: string) => {
     router.push(`/project/${projectId}`)
@@ -184,12 +186,14 @@ export default function CombinedCalendarPage() {
           <Link href="/">
             <Button variant="outline" size="sm" className="gap-2 bg-transparent">
               <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
+              Retour au Tableau de Bord
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-balance">Project Calendar</h1>
-            <p className="text-muted-foreground text-lg mt-1">View all project tasks and schedules in one place</p>
+            <h1 className="text-3xl font-bold text-balance">{t("calendar.title")}</h1>
+            <p className="text-muted-foreground text-lg mt-1">
+              Voir toutes les tâches et plannings de projets en un seul endroit
+            </p>
           </div>
         </div>
 
@@ -198,10 +202,10 @@ export default function CombinedCalendarPage() {
             <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={selectedProject} onValueChange={setSelectedProject}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by project" />
+                <SelectValue placeholder="Filtrer par projet" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
+                <SelectItem value="all">{t("calendar.allProjects")}</SelectItem>
                 {mockProjects.map((project) => (
                   <SelectItem key={project.id} value={project.id}>
                     <div className="flex items-center gap-2">
@@ -236,17 +240,17 @@ export default function CombinedCalendarPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Combined Project Schedule
+                Planning Combiné des Projets
               </CardTitle>
               <CardDescription>
                 {selectedProject === "all"
-                  ? "All tasks from all projects"
-                  : `Tasks from ${mockProjects.find((p) => p.id === selectedProject)?.name}`}
+                  ? "Toutes les tâches de tous les projets"
+                  : `Tâches de ${mockProjects.find((p) => p.id === selectedProject)?.name}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-7 gap-1 mb-4">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                {["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"].map((day) => (
                   <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
                     {day}
                   </div>
@@ -305,8 +309,8 @@ export default function CombinedCalendarPage() {
           {/* Upcoming Tasks */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Upcoming Tasks</CardTitle>
-              <CardDescription>Next 7 days</CardDescription>
+              <CardTitle className="text-lg">{t("calendar.upcomingTasks")}</CardTitle>
+              <CardDescription>7 prochains jours</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {getUpcomingTasks()
@@ -328,7 +332,7 @@ export default function CombinedCalendarPage() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="h-3 w-3" />
-                      {new Date(task.dueDate!).toLocaleDateString("en-US", {
+                      {new Date(task.dueDate!).toLocaleDateString("fr-FR", {
                         month: "short",
                         day: "numeric",
                       })}
@@ -342,14 +346,14 @@ export default function CombinedCalendarPage() {
                   </div>
                 ))}
 
-              {getUpcomingTasks().length === 0 && <p className="text-sm text-muted-foreground">No upcoming tasks</p>}
+              {getUpcomingTasks().length === 0 && <p className="text-sm text-muted-foreground">Aucune tâche à venir</p>}
             </CardContent>
           </Card>
 
           {/* Project Legend */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Projects</CardTitle>
+              <CardTitle className="text-lg">{t("nav.projects")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {mockProjects.map((project) => (
@@ -361,7 +365,7 @@ export default function CombinedCalendarPage() {
                   <div className={`w-3 h-3 rounded-full ${project.color}`}></div>
                   <span>{project.name}</span>
                   <Badge variant="outline" className="text-xs ml-auto">
-                    {project.status}
+                    {t(`status.${project.status.replace("-", "")}`)}
                   </Badge>
                 </div>
               ))}
@@ -371,20 +375,20 @@ export default function CombinedCalendarPage() {
           {/* Priority Legend */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Priority</CardTitle>
+              <CardTitle className="text-lg">{t("tasks.priority")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-3 h-3 rounded bg-red-500"></div>
-                <span>High Priority</span>
+                <span>Priorité Élevée</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-3 h-3 rounded bg-yellow-500"></div>
-                <span>Medium Priority</span>
+                <span>Priorité Moyenne</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-3 h-3 rounded bg-blue-500"></div>
-                <span>Low Priority</span>
+                <span>Priorité Faible</span>
               </div>
             </CardContent>
           </Card>

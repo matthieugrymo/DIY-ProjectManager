@@ -20,6 +20,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
 import { format } from "date-fns"
+import { useLanguage } from "@/contexts/language-context"
 
 interface CreateProjectDialogProps {
   open: boolean
@@ -45,6 +46,7 @@ export function CreateProjectDialog({ open, onOpenChange, onProjectCreated }: Cr
   const [newItemName, setNewItemName] = useState("")
   const [newItemCategory, setNewItemCategory] = useState("")
   const [newItemCost, setNewItemCost] = useState("")
+  const { t } = useLanguage() // Added translation hook
 
   const calculateTotalBudget = () => {
     return budgetItems.filter((item) => item.isIncluded).reduce((total, item) => total + item.estimatedCost, 0)
@@ -112,54 +114,56 @@ export function CreateProjectDialog({ open, onOpenChange, onProjectCreated }: Cr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
-          <DialogDescription>Start planning your next DIY project with budget estimation.</DialogDescription>
+          <DialogTitle>{t("projects.createNew")}</DialogTitle>
+          <DialogDescription>
+            Commencez à planifier votre prochain projet DIY avec estimation budgétaire.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="title">Project Title</Label>
+            <Label htmlFor="title">Titre du Projet</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g., Kitchen Backsplash Installation"
+              placeholder="ex: Installation de Dosseret de Cuisine"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("projects.description")}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of your project..."
+              placeholder="Brève description de votre projet..."
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>{t("projects.status")}</Label>
               <Select value={status} onValueChange={(value: "planning" | "in-progress") => setStatus(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="planning">Planning</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="planning">{t("status.planning")}</SelectItem>
+                  <SelectItem value="in-progress">{t("status.inprogress")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Due Date</Label>
+              <Label>{t("projects.dueDate")}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent">
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? format(dueDate, "PPP") : "Pick a date"}
+                    {dueDate ? format(dueDate, "PPP") : "Choisir une date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -171,7 +175,7 @@ export function CreateProjectDialog({ open, onOpenChange, onProjectCreated }: Cr
 
           <div className="space-y-4 border-t pt-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">Budget Estimation</Label>
+              <Label className="text-base font-semibold">Estimation Budgétaire</Label>
               <div className="text-sm text-muted-foreground">
                 Total: <span className="font-semibold text-emerald-600">${calculateTotalBudget().toFixed(2)}</span>
               </div>
@@ -180,31 +184,31 @@ export function CreateProjectDialog({ open, onOpenChange, onProjectCreated }: Cr
             {/* Add new budget item */}
             <div className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                <Label className="text-xs">Item Name</Label>
+                <Label className="text-xs">Nom de l'Article</Label>
                 <Input
                   value={newItemName}
                   onChange={(e) => setNewItemName(e.target.value)}
-                  placeholder="e.g., Tiles"
+                  placeholder="ex: Carreaux"
                   className="h-8"
                 />
               </div>
               <div className="col-span-3">
-                <Label className="text-xs">Category</Label>
+                <Label className="text-xs">Catégorie</Label>
                 <Select value={newItemCategory} onValueChange={setNewItemCategory}>
                   <SelectTrigger className="h-8">
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder="Catégorie" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="materials">Materials</SelectItem>
-                    <SelectItem value="tools">Tools</SelectItem>
-                    <SelectItem value="labor">Labor</SelectItem>
-                    <SelectItem value="permits">Permits</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="materials">Matériaux</SelectItem>
+                    <SelectItem value="tools">Outils</SelectItem>
+                    <SelectItem value="labor">Main-d'œuvre</SelectItem>
+                    <SelectItem value="permits">Permis</SelectItem>
+                    <SelectItem value="other">Autre</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="col-span-3">
-                <Label className="text-xs">Cost ($)</Label>
+                <Label className="text-xs">Coût ($)</Label>
                 <Input
                   type="number"
                   value={newItemCost}
@@ -257,9 +261,9 @@ export function CreateProjectDialog({ open, onOpenChange, onProjectCreated }: Cr
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("button.cancel")}
             </Button>
-            <Button type="submit">Create Project</Button>
+            <Button type="submit">Créer Projet</Button>
           </DialogFooter>
         </form>
       </DialogContent>

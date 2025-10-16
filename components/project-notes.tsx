@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Plus, Edit2, Trash2, StickyNote, Calendar } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
 
 interface Note {
   id: string
@@ -70,6 +71,7 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
     content: "",
     category: "general" as Note["category"],
   })
+  const { t } = useLanguage() // Added translation hook
 
   const handleAddNote = () => {
     if (!newNote.title.trim() || !newNote.content.trim()) return
@@ -123,7 +125,7 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("fr-FR", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
@@ -153,65 +155,78 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
     }
   }
 
+  const getCategoryName = (category: Note["category"]) => {
+    switch (category) {
+      case "important":
+        return "Important"
+      case "reminder":
+        return "Rappel"
+      case "idea":
+        return "Idée"
+      default:
+        return "Général"
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Project Notes</h2>
-          <p className="text-muted-foreground">Keep track of important information, ideas, and reminders</p>
+          <h2 className="text-2xl font-bold">{t("notes.title")}</h2>
+          <p className="text-muted-foreground">Gardez une trace des informations importantes, idées et rappels</p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              Add Note
+              {t("notes.addNote")}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-              <DialogTitle>Add New Note</DialogTitle>
-              <DialogDescription>Create a new note for your project</DialogDescription>
+              <DialogTitle>Ajouter une Nouvelle Note</DialogTitle>
+              <DialogDescription>Créer une nouvelle note pour votre projet</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Titre</Label>
                 <Input
                   id="title"
                   value={newNote.title}
                   onChange={(e) => setNewNote((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="Enter note title..."
+                  placeholder="Entrez le titre de la note..."
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">Catégorie</Label>
                 <select
                   id="category"
                   value={newNote.category}
                   onChange={(e) => setNewNote((prev) => ({ ...prev, category: e.target.value as Note["category"] }))}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="general">General</option>
+                  <option value="general">Général</option>
                   <option value="important">Important</option>
-                  <option value="reminder">Reminder</option>
-                  <option value="idea">Idea</option>
+                  <option value="reminder">Rappel</option>
+                  <option value="idea">Idée</option>
                 </select>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="content">Content</Label>
+                <Label htmlFor="content">Contenu</Label>
                 <Textarea
                   id="content"
                   value={newNote.content}
                   onChange={(e) => setNewNote((prev) => ({ ...prev, content: e.target.value }))}
-                  placeholder="Write your note here..."
+                  placeholder="Écrivez votre note ici..."
                   rows={4}
                 />
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                Cancel
+                {t("button.cancel")}
               </Button>
-              <Button onClick={handleAddNote}>Add Note</Button>
+              <Button onClick={handleAddNote}>Ajouter Note</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -221,13 +236,14 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <StickyNote className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No notes yet</h3>
+            <h3 className="text-lg font-semibold mb-2">Aucune note pour l'instant</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Start adding notes to keep track of important information and ideas for your project.
+              Commencez à ajouter des notes pour garder une trace des informations importantes et idées pour votre
+              projet.
             </p>
             <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
               <Plus className="h-4 w-4" />
-              Add Your First Note
+              Ajouter Votre Première Note
             </Button>
           </CardContent>
         </Card>
@@ -241,7 +257,7 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
                     <CardTitle className="text-lg">{note.title}</CardTitle>
                     <Badge variant="secondary" className={`gap-1 ${getCategoryColor(note.category)}`}>
                       {getCategoryIcon(note.category)}
-                      {note.category}
+                      {getCategoryName(note.category)}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-1">
@@ -259,8 +275,8 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
                   </div>
                 </div>
                 <CardDescription className="text-xs">
-                  Created {formatDate(note.createdAt)}
-                  {note.updatedAt !== note.createdAt && ` • Updated ${formatDate(note.updatedAt)}`}
+                  Créé le {formatDate(note.createdAt)}
+                  {note.updatedAt !== note.createdAt && ` • Modifié le ${formatDate(note.updatedAt)}`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -275,49 +291,49 @@ export function ProjectNotes({ projectId }: ProjectNotesProps) {
       <Dialog open={!!editingNote} onOpenChange={() => setEditingNote(null)}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Edit Note</DialogTitle>
-            <DialogDescription>Update your note information</DialogDescription>
+            <DialogTitle>Modifier la Note</DialogTitle>
+            <DialogDescription>Mettre à jour les informations de votre note</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="edit-title">Title</Label>
+              <Label htmlFor="edit-title">Titre</Label>
               <Input
                 id="edit-title"
                 value={newNote.title}
                 onChange={(e) => setNewNote((prev) => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter note title..."
+                placeholder="Entrez le titre de la note..."
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-category">Category</Label>
+              <Label htmlFor="edit-category">Catégorie</Label>
               <select
                 id="edit-category"
                 value={newNote.category}
                 onChange={(e) => setNewNote((prev) => ({ ...prev, category: e.target.value as Note["category"] }))}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="general">General</option>
+                <option value="general">Général</option>
                 <option value="important">Important</option>
-                <option value="reminder">Reminder</option>
-                <option value="idea">Idea</option>
+                <option value="reminder">Rappel</option>
+                <option value="idea">Idée</option>
               </select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-content">Content</Label>
+              <Label htmlFor="edit-content">Contenu</Label>
               <Textarea
                 id="edit-content"
                 value={newNote.content}
                 onChange={(e) => setNewNote((prev) => ({ ...prev, content: e.target.value }))}
-                placeholder="Write your note here..."
+                placeholder="Écrivez votre note ici..."
                 rows={4}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingNote(null)}>
-              Cancel
+              {t("button.cancel")}
             </Button>
-            <Button onClick={handleUpdateNote}>Update Note</Button>
+            <Button onClick={handleUpdateNote}>Mettre à Jour Note</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

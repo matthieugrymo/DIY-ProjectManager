@@ -19,6 +19,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Plus, Package, DollarSign, ShoppingCart, CheckCircle2, ListChecks, Copy, Download } from "lucide-react"
 import { MaterialSelection } from "./material-selection"
+import { useLanguage } from "@/contexts/language-context"
 
 interface Material {
   id: string
@@ -48,6 +49,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
     supplier: "",
     notes: "",
   })
+  const { t } = useLanguage() // Added translation hook
 
   const togglePurchased = (materialId: string) => {
     const updatedMaterials = materials.map((material) =>
@@ -101,20 +103,20 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
     const neededMaterials = materials.filter((material) => !material.purchased)
 
     if (neededMaterials.length === 0) {
-      return "All materials have been purchased! ✅"
+      return "Tous les matériaux ont été achetés ! ✅"
     }
 
-    let wishlistText = "🛠️ PROJECT MATERIALS WISHLIST\n"
-    wishlistText += "=" + "=".repeat(35) + "\n\n"
+    let wishlistText = "🛠️ LISTE DE SOUHAITS MATÉRIAUX PROJET\n"
+    wishlistText += "=" + "=".repeat(40) + "\n\n"
 
     neededMaterials.forEach((material, index) => {
       wishlistText += `${index + 1}. ${material.name}\n`
-      wishlistText += `   Quantity: ${material.quantity} ${material.unit}\n`
+      wishlistText += `   Quantité: ${material.quantity} ${material.unit}\n`
       if (material.cost) {
-        wishlistText += `   Est. Cost: $${(material.cost * material.quantity).toFixed(2)} ($${material.cost.toFixed(2)} per ${material.unit})\n`
+        wishlistText += `   Coût Est.: $${(material.cost * material.quantity).toFixed(2)} ($${material.cost.toFixed(2)} par ${material.unit})\n`
       }
       if (material.supplier) {
-        wishlistText += `   Supplier: ${material.supplier}\n`
+        wishlistText += `   Fournisseur: ${material.supplier}\n`
       }
       if (material.notes) {
         wishlistText += `   Notes: ${material.notes}\n`
@@ -124,11 +126,11 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
 
     const totalCost = neededMaterials.reduce((acc, material) => acc + (material.cost || 0) * material.quantity, 0)
     if (totalCost > 0) {
-      wishlistText += `💰 TOTAL ESTIMATED COST: $${totalCost.toFixed(2)}\n`
+      wishlistText += `💰 COÛT TOTAL ESTIMÉ: $${totalCost.toFixed(2)}\n`
     }
 
-    wishlistText += `📋 Total Items: ${neededMaterials.length}\n`
-    wishlistText += `\nGenerated on: ${new Date().toLocaleDateString()}`
+    wishlistText += `📋 Total Articles: ${neededMaterials.length}\n`
+    wishlistText += `\nGénéré le: ${new Date().toLocaleDateString("fr-FR")}`
 
     return wishlistText
   }
@@ -165,9 +167,9 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Project Materials</h2>
+          <h2 className="text-2xl font-semibold">{t("materials.title")} du Projet</h2>
           <p className="text-muted-foreground">
-            {purchasedMaterials.length} of {materials.length} materials purchased
+            {purchasedMaterials.length} sur {materials.length} matériaux achetés
           </p>
         </div>
 
@@ -177,14 +179,14 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
               <DialogTrigger asChild>
                 <Button variant="outline" className="gap-2 bg-transparent">
                   <ListChecks className="h-4 w-4" />
-                  Create Wishlist
+                  {t("materials.createWishlist")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Materials Wishlist</DialogTitle>
+                  <DialogTitle>Liste de Souhaits Matériaux</DialogTitle>
                   <DialogDescription>
-                    Your complete materials list with quantities and estimated costs
+                    Votre liste complète de matériaux avec quantités et coûts estimés
                   </DialogDescription>
                 </DialogHeader>
 
@@ -199,11 +201,11 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
                 <DialogFooter className="gap-2">
                   <Button variant="outline" onClick={copyWishlistToClipboard} className="gap-2 bg-transparent">
                     <Copy className="h-4 w-4" />
-                    Copy to Clipboard
+                    Copier dans le Presse-papiers
                   </Button>
                   <Button onClick={downloadWishlist} className="gap-2">
                     <Download className="h-4 w-4" />
-                    Download as File
+                    Télécharger comme Fichier
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -212,36 +214,36 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
 
           <Button variant="outline" onClick={() => setShowMaterialSelection(true)} className="gap-2">
             <Plus className="h-4 w-4" />
-            Browse Materials
+            Parcourir les Matériaux
           </Button>
 
           <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                Custom Material
+                Matériau Personnalisé
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Material</DialogTitle>
-                <DialogDescription>Add a material needed for this project</DialogDescription>
+                <DialogTitle>Ajouter un Nouveau Matériau</DialogTitle>
+                <DialogDescription>Ajouter un matériau nécessaire pour ce projet</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="material-name">Material Name</Label>
+                  <Label htmlFor="material-name">Nom du Matériau</Label>
                   <Input
                     id="material-name"
                     value={newMaterial.name}
                     onChange={(e) => setNewMaterial({ ...newMaterial, name: e.target.value })}
-                    placeholder="e.g., Subway Tiles (3x6 inch)"
+                    placeholder="ex: Carreaux de Métro (3x6 pouces)"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantity</Label>
+                    <Label htmlFor="quantity">{t("materials.quantity")}</Label>
                     <Input
                       id="quantity"
                       type="number"
@@ -252,19 +254,19 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="unit">Unit</Label>
+                    <Label htmlFor="unit">Unité</Label>
                     <Input
                       id="unit"
                       value={newMaterial.unit}
                       onChange={(e) => setNewMaterial({ ...newMaterial, unit: e.target.value })}
-                      placeholder="pieces, bags, bottles..."
+                      placeholder="pièces, sacs, bouteilles..."
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="cost">Cost per Unit ($)</Label>
+                    <Label htmlFor="cost">Coût par Unité ($)</Label>
                     <Input
                       id="cost"
                       type="number"
@@ -276,32 +278,32 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="supplier">Supplier (Optional)</Label>
+                    <Label htmlFor="supplier">{t("materials.supplier")} (Optionnel)</Label>
                     <Input
                       id="supplier"
                       value={newMaterial.supplier}
                       onChange={(e) => setNewMaterial({ ...newMaterial, supplier: e.target.value })}
-                      placeholder="Home Depot, Lowes..."
+                      placeholder="Home Depot, Rona..."
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="notes">Notes (Optional)</Label>
+                  <Label htmlFor="notes">Notes (Optionnel)</Label>
                   <Textarea
                     id="notes"
                     value={newMaterial.notes}
                     onChange={(e) => setNewMaterial({ ...newMaterial, notes: e.target.value })}
-                    placeholder="Any special requirements or notes..."
+                    placeholder="Exigences spéciales ou notes..."
                   />
                 </div>
               </div>
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-                  Cancel
+                  {t("button.cancel")}
                 </Button>
-                <Button onClick={addMaterial}>Add Material</Button>
+                <Button onClick={addMaterial}>Ajouter Matériau</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -311,7 +313,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("budget.totalBudget")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalCost.toFixed(2)}</div>
@@ -320,7 +322,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Purchased</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("materials.purchased")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">${purchasedCost.toFixed(2)}</div>
@@ -329,7 +331,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Remaining</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("budget.remaining")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">${(totalCost - purchasedCost).toFixed(2)}</div>
@@ -342,7 +344,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-orange-500" />
-              Materials Needed ({neededMaterials.length})
+              Matériaux Nécessaires ({neededMaterials.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -374,7 +376,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
                     </span>
                     {material.cost && (
                       <span>
-                        ${material.cost.toFixed(2)} per {material.unit}
+                        ${material.cost.toFixed(2)} par {material.unit}
                       </span>
                     )}
                     {material.supplier && <Badge variant="outline">{material.supplier}</Badge>}
@@ -393,7 +395,7 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
-              Purchased Materials ({purchasedMaterials.length})
+              Matériaux Achetés ({purchasedMaterials.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -439,11 +441,11 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
         <Card>
           <CardContent className="text-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">No materials yet</h3>
-            <p className="text-muted-foreground mb-4">Start by adding materials needed for this project</p>
+            <h3 className="text-lg font-medium mb-2">Aucun matériau pour l'instant</h3>
+            <p className="text-muted-foreground mb-4">Commencez par ajouter les matériaux nécessaires pour ce projet</p>
             <Button onClick={() => setShowAddDialog(true)} className="gap-2">
               <Plus className="h-4 w-4" />
-              Add First Material
+              Ajouter le Premier Matériau
             </Button>
           </CardContent>
         </Card>
