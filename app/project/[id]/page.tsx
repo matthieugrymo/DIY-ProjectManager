@@ -28,7 +28,7 @@ import { ProjectFiles } from "@/components/project-files"
 import { ProjectNotes } from "@/components/project-notes"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
-import { useIsMobile } from "@/components/ui/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile" // Fixed import to use hooks directory
 
 interface Project {
   id: string
@@ -330,20 +330,22 @@ export default function ProjectDetailPage() {
               )}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <div className="text-center">
-                  <div className="text-lg sm:text-2xl font-bold text-primary">{completedTasks}</div>
-                  <div className="text-[10px] sm:text-sm text-muted-foreground">Tâches Terminées</div>
+                  <div className="text-lg sm:text-2xl font-bold">{completedTasks}</div>
+                  <div className="text-[10px] sm:text-sm text-muted-foreground">{t("dashboard.completedTasks")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg sm:text-2xl font-bold">{tasks.length}</div>
-                  <div className="text-[10px] sm:text-sm text-muted-foreground">Total Tâches</div>
+                  <div className="text-[10px] sm:text-sm text-muted-foreground">
+                    {t("common.total")} {t("nav.tasks")}
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg sm:text-2xl font-bold text-accent">{completedHours}h</div>
-                  <div className="text-[10px] sm:text-sm text-muted-foreground">Heures Passées</div>
+                  <div className="text-[10px] sm:text-sm text-muted-foreground">{t("dashboard.timeSpent")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg sm:text-2xl font-bold">{formatDate(project.dueDate)}</div>
-                  <div className="text-[10px] sm:text-sm text-muted-foreground">Date Limite</div>
+                  <div className="text-[10px] sm:text-sm text-muted-foreground">{t("dashboard.deadline")}</div>
                 </div>
               </div>
             </CardContent>
@@ -353,12 +355,12 @@ export default function ProjectDetailPage() {
         <div className="space-y-3 sm:space-y-4">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base sm:text-lg">Aperçu du Progrès</CardTitle>
+              <CardTitle className="text-base sm:text-lg">{t("dashboard.progressOverview")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span>Progrès Global</span>
+                  <span>{t("common.progress")}</span>
                   <span className="font-medium">{project.progress}%</span>
                 </div>
                 <Progress value={project.progress} className="h-2 sm:h-3" />
@@ -366,7 +368,7 @@ export default function ProjectDetailPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span>Tâches Terminées</span>
+                  <span>{t("dashboard.completedTasks")}</span>
                   <span className="font-medium">
                     {completedTasks}/{tasks.length}
                   </span>
@@ -376,7 +378,7 @@ export default function ProjectDetailPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span>Progrès Temps</span>
+                  <span>{t("dashboard.timeSpent")}</span>
                   <span className="font-medium">
                     {completedHours}/{totalEstimatedHours}h
                   </span>
@@ -406,12 +408,12 @@ export default function ProjectDetailPage() {
                   onClick={handleTileConfigurator}
                 >
                   <Calculator className="h-3 w-3 sm:h-4 sm:w-4" />
-                  {t("project.tileConfigurator", "Configurateur de Carreaux")}
+                  {t("project.tileConfigurator")}
                 </Button>
               )}
               <Button className="w-full gap-2 bg-transparent text-xs sm:text-sm h-8 sm:h-9" variant="outline" size="sm">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                Planifier Tâche
+                {t("dashboard.viewCalendar")}
               </Button>
               <Button
                 className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm h-8 sm:h-9"

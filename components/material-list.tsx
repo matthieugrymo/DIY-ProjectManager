@@ -17,9 +17,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Plus, Package, DollarSign, ShoppingCart, CheckCircle2, ListChecks, Copy, Download } from "lucide-react"
+import {
+  Plus,
+  Package,
+  DollarSign,
+  ShoppingCart,
+  CheckCircle2,
+  ListChecks,
+  Copy,
+  Download,
+  LinkIcon,
+  Loader2,
+  ExternalLink,
+} from "lucide-react"
 import { MaterialSelection } from "./material-selection"
 import { useLanguage } from "@/contexts/language-context"
+import { fetchProductPrice } from "@/app/actions/fetch-product-price"
 
 interface Material {
   id: string
@@ -41,6 +54,8 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showMaterialSelection, setShowMaterialSelection] = useState(false)
   const [showWishlistDialog, setShowWishlistDialog] = useState(false)
+  const [isFetchingPrice, setIsFetchingPrice] = useState(false)
+  const [importUrl, setImportUrl] = useState("")
   const [newMaterial, setNewMaterial] = useState({
     name: "",
     quantity: 1,
@@ -97,6 +112,47 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
     }
 
     onMaterialsChange([...materials, material])
+  }
+
+  const handleImportUrl = async () => {
+    if (!importUrl) return
+
+    setIsFetchingPrice(true)
+    try {
+      const result = await fetchProductPrice(importUrl)
+
+      if (result.error) {
+        setNewMaterial((prev) => ({
+          ...prev,
+          supplier: "Leroy Merlin",
+          notes: prev.notes
+            ? `${prev.notes}\nSource: ${importUrl} (${result.error})`
+            : `Source: ${importUrl}\n(Prix à vérifier manuellement: ${result.error})`,
+        }))
+        // Optional: could show a toast here
+      } else if (result.price) {
+        setNewMaterial((prev) => ({
+          ...prev,
+          cost: result.price,
+          name: result.name || prev.name,
+          supplier: "Leroy Merlin",
+          notes: prev.notes ? `${prev.notes}\nSource: ${importUrl}` : `Source: ${importUrl}`,
+        }))
+      }
+    } catch (error) {
+      console.error("Failed to import", error)
+      setNewMaterial((prev) => ({
+        ...prev,
+        supplier: "Leroy Merlin",
+        notes: prev.notes ? `${prev.notes}\nSource: ${importUrl}` : `Source: ${importUrl}`,
+      }))
+    } finally {
+      setIsFetchingPrice(false)
+    }
+  }
+
+  const openLeroyMerlin = () => {
+    window.open("https://www.leroymerlin.fr", "_blank")
   }
 
   const generateWishlist = () => {
@@ -229,6 +285,34 @@ export function MaterialList({ materials, onMaterialsChange }: MaterialListProps
                 <DialogTitle>Ajouter un Nouveau Matériau</DialogTitle>
                 <DialogDescription>Ajouter un matériau nécessaire pour ce projet</DialogDescription>
               </DialogHeader>
+
+              <div className="bg-green-50 p-4 rounded-lg border border-green-100 space-y-3 mb-4">
+                <h4 className="font-medium text-green-800 flex items-center gap-2">
+                  <LinkIcon className="h-4 w-4" />
+                  Importer depuis Leroy Merlin
+                </h4>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Collez l'URL du produit Leroy Merlin ici..."
+                    value={importUrl}
+                    onChange={(e) => setImportUrl(e.target.value)}
+                    className="bg-white"
+                  />
+                  <Button size="icon" onClick={handleImportUrl} disabled={isFetchingPrice || !importUrl}>
+                    {isFetchingPrice ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-green-700 h-auto p-0 gap-1"
+                    onClick={openLeroyMerlin}
+                  >
+                    Ouvrir leroymerlin.fr <ExternalLink className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">

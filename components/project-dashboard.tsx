@@ -129,27 +129,31 @@ export function ProjectDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">{t("tasks.title")} Cette Semaine</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              {t("tasks.title")} {t("dashboard.thisWeek")}
+            </CardTitle>
             <CheckSquare className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">12</div>
             <p className="text-[10px] sm:text-xs text-muted-foreground">
-              8 {t("tasks.completed").toLowerCase()}, 4 restantes
+              8 {t("dashboard.completed")}, 4 {t("dashboard.remaining")}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">{t("materials.title")} Nécessaires</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              {t("materials.title")} {t("dashboard.needed")}
+            </CardTitle>
             <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">
               {projects.reduce((acc, p) => acc + p.materialsNeeded, 0)}
             </div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Dans tous les projets</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">{t("dashboard.acrossProjects")}</p>
           </CardContent>
         </Card>
 
@@ -160,7 +164,7 @@ export function ProjectDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl font-bold">{completedProjects.length}</div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Projets terminés</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">{t("status.completed")}</p>
           </CardContent>
         </Card>
       </div>
@@ -187,8 +191,8 @@ export function ProjectDashboard() {
       {/* Recent Activity */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Activité Récente</CardTitle>
-          <CardDescription className="text-sm">Dernières mises à jour de vos projets</CardDescription>
+          <CardTitle className="text-lg sm:text-xl">{t("dashboard.recentActivity")}</CardTitle>
+          <CardDescription className="text-sm">Latest updates from your projects</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-3 sm:gap-4">

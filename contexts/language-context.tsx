@@ -36,6 +36,15 @@ const translations = {
     "dashboard.activeProjects": "Active Projects",
     "dashboard.completedProjects": "Completed Projects",
     "dashboard.totalBudget": "Total Budget",
+    "dashboard.recentActivity": "Recent Activity",
+    "dashboard.progressOverview": "Progress Overview",
+    "dashboard.timeSpent": "Time Spent",
+    "dashboard.deadline": "Deadline",
+    "dashboard.thisWeek": "This Week",
+    "dashboard.remaining": "remaining",
+    "dashboard.completed": "completed",
+    "dashboard.needed": "needed",
+    "dashboard.acrossProjects": "across all projects",
 
     // Project Status
     "status.planning": "Planning",
@@ -94,7 +103,6 @@ const translations = {
     "calendar.allProjects": "All Projects",
     "calendar.upcomingTasks": "Upcoming Tasks",
     "calendar.today": "Today",
-    "calendar.thisWeek": "This Week",
     "calendar.nextWeek": "Next Week",
 
     // Forms & Buttons
@@ -118,6 +126,7 @@ const translations = {
     "common.total": "Total",
     "common.search": "Search",
     "common.filter": "Filter",
+    "common.progress": "Progress",
   },
   fr: {
     // Navigation & General
@@ -140,6 +149,15 @@ const translations = {
     "dashboard.activeProjects": "Projets Actifs",
     "dashboard.completedProjects": "Projets Terminés",
     "dashboard.totalBudget": "Budget Total",
+    "dashboard.recentActivity": "Activité Récente",
+    "dashboard.progressOverview": "Aperçu du Progrès",
+    "dashboard.timeSpent": "Temps Passé",
+    "dashboard.deadline": "Date Limite",
+    "dashboard.thisWeek": "Cette Semaine",
+    "dashboard.remaining": "restantes",
+    "dashboard.completed": "terminées",
+    "dashboard.needed": "nécessaires",
+    "dashboard.acrossProjects": "dans tous les projets",
 
     // Project Status
     "status.planning": "Planification",
@@ -198,7 +216,6 @@ const translations = {
     "calendar.allProjects": "Tous les Projets",
     "calendar.upcomingTasks": "Tâches à Venir",
     "calendar.today": "Aujourd'hui",
-    "calendar.thisWeek": "Cette Semaine",
     "calendar.nextWeek": "Semaine Prochaine",
 
     // Forms & Buttons
@@ -222,6 +239,7 @@ const translations = {
     "common.total": "Total",
     "common.search": "Rechercher",
     "common.filter": "Filtrer",
+    "common.progress": "Progrès",
   },
 }
 

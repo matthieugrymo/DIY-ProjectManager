@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { ArrowLeft, Plus } from "lucide-react"
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Search, Paintbrush, Zap, Wrench, TreePine, ToyBrick as Brick, Droplets, ArrowLeft, Plus } from "lucide-react"
+import { ToyBrick as Brick, Paintbrush, Zap, Droplets, TreePine, Wrench, Search, ExternalLink } from "lucide-react"
 
 interface MaterialType {
   id: string
@@ -358,9 +359,14 @@ export function MaterialSelection({ open, onOpenChange, onMaterialSelect }: Mate
     setSearchQuery("")
   }
 
+  const openLeroyMerlinCategory = (categoryName: string) => {
+    const query = encodeURIComponent(categoryName)
+    window.open(`https://www.leroymerlin.fr/recherche?q=${query}`, "_blank")
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2">
             {(selectedCategory || selectedMaterial) && (
@@ -406,9 +412,23 @@ export function MaterialSelection({ open, onOpenChange, onMaterialSelect }: Mate
                 {filteredCategories.map((category) => (
                   <Card
                     key={category.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow"
+                    className="cursor-pointer hover:shadow-md transition-shadow group relative"
                     onClick={() => setSelectedCategory(category.id)}
                   >
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8 rounded-full bg-white shadow-sm hover:bg-green-50 text-green-600"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openLeroyMerlinCategory(category.name)
+                        }}
+                        title="Voir sur Leroy Merlin"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </div>
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${category.color} text-white`}>{category.icon}</div>
@@ -446,12 +466,20 @@ export function MaterialSelection({ open, onOpenChange, onMaterialSelect }: Mate
 
                 return (
                   <>
-                    <div className="flex items-center gap-3 pb-4 border-b">
-                      <div className={`p-2 rounded-lg ${category.color} text-white`}>{category.icon}</div>
-                      <div>
-                        <h3 className="text-xl font-semibold">{category.name}</h3>
-                        <p className="text-muted-foreground">{category.materials.length} materials available</p>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <Button variant="ghost" onClick={() => setSelectedCategory(null)} className="gap-2">
+                        ← Back to Categories
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="text-green-600 border-green-200 hover:bg-green-50 gap-2 bg-transparent"
+                        onClick={() => {
+                          if (category) openLeroyMerlinCategory(category.name)
+                        }}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Voir sur Leroy Merlin
+                      </Button>
                     </div>
 
                     <div className="grid gap-3">

@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -5,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar, CheckSquare, Package, MoreHorizontal } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { useLanguage } from "@/contexts/language-context" // Added import
 
 interface Project {
   id: string
@@ -31,6 +34,8 @@ const statusColors = {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const { t } = useLanguage() // Added hook usage
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
@@ -61,10 +66,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Details</DropdownMenuItem>
-              <DropdownMenuItem>Edit Project</DropdownMenuItem>
+              <DropdownMenuItem>{t("project.viewDetails")}</DropdownMenuItem> {/* Used translation */}
+              <DropdownMenuItem>{t("project.edit")}</DropdownMenuItem> {/* Used translation */}
               <DropdownMenuItem>Duplicate</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive">{t("project.delete")}</DropdownMenuItem>{" "}
+              {/* Used translation */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -73,7 +79,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-3 sm:pb-6">
         <div className="flex items-center justify-between">
           <Badge className={`${statusColors[project.status]} text-[10px] sm:text-xs`}>
-            {project.status.replace("-", " ")}
+            {t(`status.${project.status.replace("-", "")}` as any)} {/* Used translation */}
           </Badge>
           <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
@@ -83,7 +89,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span>Progress</span>
+            <span>{t("common.progress")}</span> {/* Used translation */}
             <span className="font-medium">{project.progress}%</span>
           </div>
           <Progress value={project.progress} className="h-1.5 sm:h-2" />
@@ -93,18 +99,21 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <CheckSquare className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
             <span>
-              {project.tasksCompleted}/{project.totalTasks} tasks
+              {project.tasksCompleted}/{project.totalTasks} {t("nav.tasks").toLowerCase()} {/* Used translation */}
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-            <span>{project.materialsNeeded} materials</span>
+            <span>
+              {project.materialsNeeded} {t("nav.materials").toLowerCase()}
+            </span>{" "}
+            {/* Used translation */}
           </div>
         </div>
 
         <Link href={`/project/${project.id}`}>
           <Button className="w-full bg-transparent text-xs sm:text-sm h-8 sm:h-9" variant="outline">
-            View Project
+            {t("project.viewDetails")} {/* Used translation */}
           </Button>
         </Link>
       </CardContent>
